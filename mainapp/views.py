@@ -10,10 +10,9 @@ def for_all_pages(request):
 
 
 
-
 class IndexView(View):
     def get(self,request):
-        products=Product.objects.all()
+        products=Product.objects.all().order_by('-id')
         return render(request,'index.html',{'products':products})
 
 class CategoryView(View):

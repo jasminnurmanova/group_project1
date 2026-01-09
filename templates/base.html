@@ -17,7 +17,6 @@
     }
 </style>
 <body>
-     Navbar Start
     <nav class="shadow navbar navbar-expand-lg bg-light">
         <div class="container">
           <a class="navbar-brand" href="/">E-Bazar</a>
@@ -61,11 +60,18 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg">
                   <li><a class="dropdown-item" href="#">Profile</a></li>
-                  <li><a class="dropdown-item" href="#">Change password</a></li>
-                  <li><a class="dropdown-item" href="#">Logout</a></li>
-                </ul>
+                  <li><a class="dropdown-item" href="{% url 'password_change' %}">Change password</a></li>
+<li> <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+    {% csrf_token %}
+    <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left; cursor: pointer; padding: 0.25rem 1rem;">
+      Logout
+    </button>
+  </form>
+</li>                </ul>
                   {% else %}
-                  <a href="#" class="btn btn-primary"›Login</a><a href="#" class="btn btn-primary">Sign up</a>
+
+                  <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+                  <a href="{% url 'users:signup' %}" class="btn btn-primary">Sign up</a>
                   {% endif %}
               </div>
           </div>
@@ -73,9 +79,12 @@
     </nav>
     <!-- Navbar End -->
     {% block content %}
+
     {% endblock content %}
+
+
     <div class="footer m-5 mb-3 ">
-        <center class="text-muted" >Abdurasulov Codes | 2023</center>
+        <center class="text-muted" >Jasmin Nurmanova Codes | 2026</center>
     </div>
     <script src="{% static 'scripts.js' %}" ></script>
     <!-- <script src="js/bootstrap.bundle.min.js"></script> -->

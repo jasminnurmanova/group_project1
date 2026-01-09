@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+New product
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+
+        <div class="col-6">
+            <h2>Are you sure to delete - {{ product.title }}</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {{ form|crispy }}
+
+                <div class="mb-3">
+                    <label class="form-label">Images</label>
+                    <input
+                        type="file"
+                        name="images"
+                        class="form-control"
+                        multiple
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="{% url 'products:detail' product.id %}">Back Home</a>
+            </form>
+        </div>
+
+        <div class="col"></div>
+    </div>
+</div>
+{% endblock content %}
