@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Chat with {{ recipient.username }}{% endblock %}
+{% block content %}
+    <main class="chats-main">
+        <div class="chats-container">
+            <!-- Left Sidebar - Chats List -->
+            <div class="chats">
+                <div class="chats-header">
+                    <h3>Chats</h3>
+                </div>
+                <div class="chats-list">
+                    {% if all_chats %}
+                        {% for c in all_chats %}
+                            {% if c.user1 == user %}
+                                <a href="{% url 'users:messenger' c.user2.id %}" class="chat-item {% if c.id == chat.id %}active{% endif %}">
+                                    <div class="chat-username">{{ c.user2.username }}</div>
+                                    <div class="chat-preview">{{ c.messages.last.content|default:"No messages yet" }}</div>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'users:messenger' c.user1.id %}" class="chat-item {% if c.id == chat.id %}active{% endif %}">
+                                    <div class="chat-username">{{ c.user1.username }}</div>
+                                    <div class="chat-preview">{{ c.messages.last.content|default:"No messages yet" }}</div>
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-chats">No chats yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Side - Messenger -->
+            <div class="messenger">
+                <!-- Messenger Header -->
+                <div class="messenger-header">
+                    <div class="header-info">
+                        <h2>{{ recipient.username }}</h2>
+                        <p>Chat started on {{ chat.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <a href="{% url 'users:profile' recipient.username %}" class="view-profile-btn">View Profile</a>
+                </div>
+
+                <!-- Messages Container -->
+                <div class="messages-container" id="messages-container">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="message {% if message.sender == user %}sent{% else %}received{% endif %}">
+                                <div class="message-content">
+                                    <strong>{{ message.sender.username }}</strong>
+                                    <p>{{ message.content }}</p>
+                                    <span class="message-time">{{ message.created_at|date:"H:i" }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="no-messages">No messages yet. Start the conversation!</p>
+                    {% endif %}
+                </div>
+
+                <!-- Message Input Form -->
+                <form method="post" class="message-form">
+                    {% csrf_token %}
+                    <input
+                        type="text"
+                        name="content"
+                        placeholder="Type your message..."
+                        class="message-input"
+                        required
+                        autofocus
+                    >
+                    <button type="submit" class="send-btn">Send</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Auto-scroll to bottom of messages
+        const messagesContainer = document.getElementById('messages-container');
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+{% endblock content %}

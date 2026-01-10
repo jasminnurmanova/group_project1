@@ -11,10 +11,7 @@ class NewProductForm(forms.ModelForm):
             'title',
             'description',
             'price',
-            'address',
             'category',
-            'phone_number',
-            'tg_username',
         )
 
     def save (self, request, commit=True):
@@ -33,8 +30,5 @@ class ProductForm(forms.ModelForm):
             'title',
             'description',
             'price',
-            'address',
             'category',
-            'phone_number',
-            'tg_username',
         )

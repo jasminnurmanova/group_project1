@@ -28,7 +28,14 @@ def new_product(request):
 
 def product_detail (request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render (request, 'product_detail.html', {'product':product})
+    if "recently_viewed" in request.session:
+        r_viewed = request.session["recently_viewed"]
+        if not product.id in r_viewed:
+            r_viewed.append(product.id)
+            request.session.modified = True
+    else:
+        request.session["recently_viewed"] = [product.id, ]
+    return render(request, 'product_detail.html', {'product': product})
 
 
 @login_required
