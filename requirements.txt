@@ -2,6 +2,7 @@ asgiref==3.11.0
 crispy-bootstrap5==2025.6
 Django==6.0.1
 django-crispy-forms==2.5
-django-unfold==0.75.0
+django-jazzmin==3.0.1
+djangorestframework==3.16.1
 pillow==12.1.0
 sqlparse==0.5.5

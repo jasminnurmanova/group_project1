@@ -3,66 +3,69 @@
 {% endblock title %}
 
 {% block content %}
-    <!-- Profile Start -->
-    <div class="container">
-        <div class="row">
-            <div class="col-12 card mt-5 ">
-                <div class="row">
-                    <div class="col-2 m-3">
-                        <img alt="profile image" class="img-thumbnail" height="150" src="{{ customuser.avatar.url }}"
-                             width="150">
+<!-- Profile Start -->
+<div class="row">
+    <div class="col-12 card mt-4">
+        <div class="row g-0">
+            <div class="col-12 col-md-3 p-3 d-flex justify-content-center">
+                {% if customuser.avatar %}
+                    <img alt="profile image" class="img-thumbnail" style="width:150px;height:150px;object-fit:cover;" src="{{ customuser.avatar.url }}">
+                {% else %}
+                    <div class="img-thumbnail d-flex align-items-center justify-content-center" style="width:150px;height:150px;">
+                        <i class="bi bi-person" style="font-size: 3rem;"></i>
                     </div>
-                    <div class="col-8 m-3">
-                        <h2>{{ customuser.get_full_name }}</h2>
-                        <p class="text-muted">@{{ customuser.username }} | {{ customuser.email }}</p>
-                        {% if customuser == request.user %}
-                            <a class="btn btn-warning" href="{% url 'users:update_profile' %}">Edit details</a>
-                            <a class="btn btn-danger" href="{% url 'password_change' %}">Update Password</a>
+                {% endif %}
+            </div>
+            <div class="col-12 col-md-9 p-3">
+                <h2 class="mb-1">{{ customuser.get_full_name|default:customuser.username }}</h2>
+                <p class="text-muted mb-2">@{{ customuser.username }}{% if customuser.email %} | {{ customuser.email }}{% endif %}</p>
+
+                {% if customuser.phone_number %}
+                    <p class="mb-1"><strong>Phone:</strong> {{ customuser.phone_number }}</p>
+                {% endif %}
+                {% if customuser.tg_username %}
+                    <p class="mb-1"><strong>Telegram:</strong> @{{ customuser.tg_username }}</p>
+                {% endif %}
+
+                {% if customuser == request.user %}
+                    <div class="mt-3 d-flex gap-2 flex-wrap">
+                        <a class="btn btn-warning" href="{% url 'users:update_profile' %}">Edit details</a>
+                        <a class="btn btn-danger" href="{% url 'password_change' %}">Update Password</a>
+                    </div>
+                {% else %}
+                    <div class="mt-3 d-flex gap-2 flex-wrap">
+                        {% if customuser.email %}
+                            <a class="btn btn-primary" href="mailto:{{ customuser.email }}">Email</a>
                         {% endif %}
-                        <a class="btn btn-primary" href="mailto:{{ customuser.email }}">Email</a>
                         <a class="btn btn-primary" href="{% url 'users:messenger' customuser.pk %}">Message</a>
                         {% if customuser.tg_username %}
-                            <a class="btn btn-primary" href="http://t.me/@{{ customuser.tg_username }}">Telegram</a>
-                        {% else %}
-                            <a class="btn btn-primary" href="http://t.me/{{ customuser.phone_number }}">Telegram</a>
+                            <a class="btn btn-primary" href="https://t.me/{{ customuser.tg_username }}" target="_blank" rel="noopener noreferrer">Telegram</a>
+                        {% elif customuser.phone_number %}
+                            <a class="btn btn-primary" href="https://t.me/{{ customuser.phone_number }}" target="_blank" rel="noopener noreferrer">Telegram</a>
                         {% endif %}
                     </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>
-    <!-- Profile End -->
+</div>
+<!-- Profile End -->
 
-    <!-- Product Cart Start -->
-    <div class="container">
-        <div class=" w-100 mt-4">
-            <h4 class="d-block">Recently Products of {{ customuser.get_full_name }}</h4>
-            {% if not customuser.product_set.exists %}
-                <center class="text-muted"> There is no products</center>
-            {% endif %}
-            <div class="d-flex flex-wrap justify-content-between">
-                <!-- Product Cart Start -->
-                {% for i in customuser.product_set.all %}
-                    <div class="card border border-0 shadow-sm d-inline-block m-1 mt-3" style="width: 16.5rem;">
-                        {% if i.productimage_set.exists %}
-                            <img alt="" class=" card-img-top" height="200"
-                                 src="{{ i.productimage_set.all.first.image.url }}">
-                        {% else %}
-                            <img alt="" class=" card-img-top" height="200" src="images/14pro2.jfif">
-                        {% endif %}
-                        <div class="card-body">
-                            <h6 class="align-center card-title">{{ i.title }}</h6>
-                            <span class="center card-text"><small>{{ i.price }}</small> so'm</span>
-                            <div class="buttons d-flex flex-wrap justify-content-between ">
-                                <i class="bi bi-bookmark-fill"></i>
-                                <a class="btn btn-outline-primary" href="#">Details</a>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-                <!-- Product Cart End -->
+<div class="products-section">
+    {% with header_title='Products by @'|add:customuser.username %}
+        {% include 'partials/section_header.html' with icon='bi-grid-3x3-gap' title=header_title %}
+    {% endwith %}
 
-            </div>
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+                {% url 'users:addremovewishlist' product.id as wishlist_url %}
+                {% include 'partials/product_card.html' with product=product wishlist_url=wishlist_url wishlist_icon='bi-heart' wishlist_title='Save' %}
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        {% include 'partials/empty_state.html' with icon='bi-inbox' title='No products yet' message="This user hasn't listed any products." %}
+    {% endif %}
+</div>
+
 {% endblock content %}

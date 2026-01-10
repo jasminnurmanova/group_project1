@@ -1,127 +1,161 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
-    <!-- Product Detail Start -->
-    <div class="container">
-        <div class=" w-100 mt-5 ">
-            <div class="row shadow-sm ">
-                <div class="col-4 p-3">
-    <div id="carouselExampleCaptions"
-         class="carousel slide"
-         data-bs-ride="carousel">
+{% block content %}
 
-        <div class="carousel-inner">
-            {% for picture in product.images.all %}
-                {% if forloop.first %}
-                    <div class="carousel-item active">
-                        <img src="{{ picture.image.url }}"
-                             class="d-block w-100"
-                             height="270">
-                    </div>
+<!-- Product Detail Start -->
+<div class="product-detail">
+    <div class="product-detail-top">
+        <!-- Image Carousel -->
+        <div class="product-gallery">
+            <div class="carousel slide" data-bs-ride="carousel" id="productCarousel">
+                <div class="carousel-inner">
+                    {% for picture in product.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img class="d-block w-100" src="{{ picture.image.url }}" alt="{{ product.title }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if product.images.count > 1 %}
+                    <button class="carousel-control-prev" data-bs-slide="prev" data-bs-target="#productCarousel" type="button">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" data-bs-slide="next" data-bs-target="#productCarousel" type="button">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-detail-card">
+            <h1 class="product-detail-title">{{ product.title }}</h1>
+
+            <div class="product-detail-seller">
+                <img src="{{ product.author.avatar.url }}" alt="{{ product.author.username }}">
+                <div class="seller-info">
+                    <a href="{% url 'users:profile' product.author.username %}" class="seller-name">
+                        <i class="bi bi-person-circle"></i> {{ product.author.username }}
+                    </a>
+                    <span class="seller-date">
+                        <i class="bi bi-calendar3"></i> Listed {{ product.created_at|date:"M d, Y" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="price-section">
+                <div class="price-label">Price</div>
+                <p class="price-tag">{{ product.price }}<span class="price-currency"> so'm</span></p>
+            </div>
+
+            <div class="product-description">
+                <h5><i class="bi bi-file-text"></i> Description</h5>
+                <p>{{ product.description|safe }}</p>
+            </div>
+
+            <div class="action-buttons">
+                {% if request.user == product.author %}
+                    <a class="action-btn btn-edit" href="{% url 'products:update' product.id %}">
+                        <i class="bi bi-pencil-square"></i> Edit Product
+                    </a>
+                    <a class="action-btn btn-delete" href="{% url 'products:delete' product.id %}">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
                 {% else %}
-                    <div class="carousel-item">
-                        <img src="{{ picture.image.url }}"
-                             class="d-block w-100"
-                             height="270">
+                    <a class="action-btn btn-contact" href="mailto:{{ product.author.email }}">
+                        <i class="bi bi-envelope-fill"></i> Email Seller
+                    </a>
+                    <a class="action-btn btn-contact" href="{% url 'users:messenger' pk=product.author.pk %}">
+                        <i class="bi bi-chat-dots-fill"></i> Message
+                    </a>
+                    {% if product.author.tg_username %}
+                    <a class="action-btn btn-telegram" href="https://t.me/{{ product.author.tg_username }}" target="_blank">
+                        <i class="bi bi-telegram"></i> Telegram
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section">
+        <h2 class="section-title mb-4">
+            <i class="bi bi-chat-left-quote"></i> Reviews & Comments
+        </h2>
+
+        <div class="comment-form">
+            <form action="{% url 'products:comment_new' product.id %}" method="post">
+                {% csrf_token %}
+                <div class="comment-input-wrapper">
+                    <label for="commentBody" class="visually-hidden">Comment</label>
+                    <input id="commentBody" type="text" name="body" class="comment-input" placeholder="Share your thoughts about this product..." required>
+                    <button type="submit" class="comment-btn">
+                        <i class="bi bi-send-fill"></i> Post
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {% if product.comment_set.all %}
+            <div class="comments-list">
+                {% for comment in product.comment_set.all %}
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">
+                                <i class="bi bi-person-fill"></i> {{ comment.author.username }}
+                            </span>
+                            <span class="comment-date">{{ comment.date|date:"M d, Y - H:i" }}</span>
+                        </div>
+                        <p class="comment-body">{{ comment.body }}</p>
+                        {% if request.user == comment.author %}
+                            <a href="{% url 'products:comment_delete' product.id comment.id %}" class="comment-delete">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-comments">
+                <div class="no-comments-icon">
+                    <i class="bi bi-chat-quote"></i>
+                </div>
+                <h4>No comments yet</h4>
+                <p>Be the first to share your thoughts!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Related Products -->
+    <div class="category-section">
+        <h2 class="section-title">
+            <i class="bi bi-grid-3x3-gap"></i> More in {{ product.category.name }}
+        </h2>
+        <div class="products-grid category-products">
+            {% for i in product.category.product_set.all %}
+                {% if i.id != product.id %}
+                    <div class="product-card">
+                        <div class="product-image related-product-image">
+                            {% if i.images.exists %}
+                                <img src="{{ i.images.first.image.url }}" alt="{{ i.title }}">
+                            {% else %}
+                                <div class="no-image-placeholder">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="product-title">{{ i.title }}</h5>
+                            <p class="product-price" style="margin: 0; font-size: 1.4rem;">{{ i.price }} <span class="product-price-small">so'm</span></p>
+                            <a href="{% url 'products:detail' i.id %}" class="product-cta" style="margin-top: 16px;">
+                                View Details <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
-
-        <!-- ✅ CONTROLS -->
-        <button class="carousel-control-prev"
-                type="button"
-                data-bs-target="#carouselExampleCaptions"
-                data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-
-        <button class="carousel-control-next"
-                type="button"
-                data-bs-target="#carouselExampleCaptions"
-                data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
-
     </div>
 </div>
-
-                <div class="col-7 p-5 ">
-                    <h4>{{ product.title }}</h4>
-                    <p class="test-muted"><a href="{% url 'users:profile' product.author.username %}">@{{ product.author.username }}</a> | 25.01.2023</p>
-                    <p > {{ product.description|safe }} </p>
-                    <div class="contact mt-4 ">
-                        {% if request.user == product.author %}
-                            <a class="btn btn-warning" href="{% url 'products:update' product.id %}">Edit details</a>
-                        {% endif %}
-
-                        <a class="btn btn-primary" href="mailto:{{customuser.email}}">Email</a>
-                        <a class="btn btn-primary" href="tel:{{customuser.phone_number}}">Call</a>
-                        <a class="btn btn-primary" href="http://t.me/@{{customuser.tg_username}}">Telegram</a>
-                    </div>
-                </div>
-            </div>
-            <div class="row ">
-                <div class="col-8 mt-5" >
-                    <h6  >In This Category</h6>
-                    <div class="d-flex flex-wrap justify-content-between">
-                        {% load static %}
-{% for i in product.category.product_set.all %}
-{% if i.id != product.id %}
-    <div class="card border border-0 shadow-sm d-inline-block m-1 mt-3"
-         style="width: 14rem;">
-
-        {% if i.images.exists %}
-            <img height="190"
-                 class="card-img-top"
-                 src="{{ i.images.first.image.url }}"
-                 alt="">
-        {% else %}
-            <img height="190"
-                 class="card-img-top"
-                 src="{% static 'images/14pro2.jfif' %}"
-                 alt="">
-        {% endif %}
-
-        <div class="card-body">
-            <h6 class="card-title">{{ i.title }}</h6>
-            <span class="card-text">{{ i.price }}</span>
-
-            <div class="buttons d-flex justify-content-between">
-                <i class="bi bi-bookmark-fill"></i>
-                <a href="{% url 'products:detail' i.id %}"
-                   class="btn btn-outline-primary">
-                    Details
-                </a>
-            </div>
-        </div>
-    </div>
-      {% endif %}
-{% endfor %}
-
-                </div>
-                <div class="col-4 mt-5 shadow-sm ">
-                    <h6 class="pt-2" >Add comment</h6>
-                    <form action="{% url 'products:comment_new' product.id %}" method="post" class="input-group">{% csrf_token %}
-                        <input class="form-control" name="body" type="text" placeholder="Type your comment..." aria-describedby="'button-addon" >
-                        <button class="btn btn-outline-success" type="submit" id="button-addon">Send</button>
-                    </form>
-                    <hr>
-                    <h6>Comments</h6>
-                    {% for comment in product.comment_set.all %}
-                    <small class="text-muted" >@{{comment.author}}| {{comment.date}}</small>
-                    <p>{{ comment.body }}
-                        {% if request.user == comment.author %}
-                        <small><a href="{% url 'products:comment_delete' product.id comment.id %}">Delete</a></small>
-                        {% endif %}
-                    </p>
-                    {% endfor %}
-                </div>
-            </div>
-
-
-    </div>
-    </div>
-    <!-- Product Detail End -->
 
 {% endblock content %}

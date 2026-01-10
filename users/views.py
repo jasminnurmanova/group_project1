@@ -26,8 +26,9 @@ class SignupView(View):
 
 class ProfileView(View):
     def get(self,request,username):
-        user=get_object_or_404(CustomUser,username=username)
-        return render(request,'profile.html',{'customuser':user})
+        user = get_object_or_404(CustomUser, username=username)
+        products = Product.objects.filter(author=user)
+        return render(request, 'profile.html', {'customuser': user, 'products': products})
 
 class UpdateProfileView(View,LoginRequiredMixin):
     login_url='login'
@@ -64,23 +65,25 @@ class WishlistView(LoginRequiredMixin, View):
 
     def get(self, request):
         wishlists = Wishlist.objects.filter(author=request.user)
-        q = request.GET.get('q', '')
+        q = request.GET.get('q', '').strip()
         if q:
-            products = Product.objects.filter(title__icontains=q)
-            wishlists = Wishlist.objects.filter(author=request.user, product__in=products)
+            wishlists = wishlists.filter(product__title__icontains=q)
         return render(request, 'wishlists.html', {"wishlists": wishlists})
 
 
 class RecentlyViewedView(View):
     def get(self, request):
+        q = request.GET.get('q', '').strip()
+
         if not "recently_viewed" in request.session:
-            products = []
+            products = Product.objects.none()
         else:
             r_viewed = request.session["recently_viewed"]
             products = Product.objects.filter(id__in=r_viewed)
-            q = request.GET.get('q', '')
-            if q:
-                products = products.filter(title__icontains=q)
+
+        if q:
+            products = products.filter(title__icontains=q)
+
         return render(request, "recently_viewed.html", {'products': products})
 
 

@@ -1,0 +1,35 @@
+<div class="product-card">
+  <div class="product-image">
+    {% if product.images.exists %}
+      <img src="{{ product.images.first.image.url }}" alt="{{ product.title }}">
+    {% else %}
+      <div class="no-image-placeholder"><i class="bi bi-image"></i></div>
+    {% endif %}
+
+    {% if wishlist_url %}
+      <a href="{{ wishlist_url }}" class="wishlist-btn" title="{{ wishlist_title|default:'Save' }}">
+        <i class="bi {{ wishlist_icon|default:'bi-heart' }}"></i>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="product-card-body">
+    <h3 class="product-title">{{ product.title }}</h3>
+
+    {% if show_seller %}
+      <p class="product-seller">
+        <i class="bi bi-person-circle"></i>
+        <a href="{% url 'users:profile' product.author.username %}">{{ product.author.username }}</a>
+      </p>
+    {% endif %}
+
+    <p class="product-price">
+      {{ product.price }}<span class="product-price-small"> so'm</span>
+    </p>
+
+    <a href="{% url 'products:detail' product.id %}" class="product-cta">
+      View Details <i class="bi bi-arrow-right"></i>
+    </a>
+  </div>
+</div>
+

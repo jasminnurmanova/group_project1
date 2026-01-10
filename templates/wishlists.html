@@ -6,48 +6,22 @@
 {% endblock title %}
 
 {% block content %}
-<!-- Product Cart Start -->
-<div class="container">
-    <div class="w-100 mt-4">
-        <h4 class="d-block">Saved Products of @{{ request.user }}</h4>
+<div class="products-section">
+    {% with header_title='Saved Products of @'|add:request.user.username %}
+        {% include 'partials/section_header.html' with icon='bi-heart' title=header_title %}
+    {% endwith %}
 
-        <div class="d-flex flex-wrap justify-content-between">
-            {% for i in wishlists %}
-            <!-- Product Card Start -->
-            <div class="card border-0 shadow-sm d-inline-block m-1 mt-3"
-                 style="width: 16.5rem;">
-
-                {% if i.product.images.all %}
-                    <img height="200"
-                         class="card-img-top"
-                         src="{{ i.product.images.all.0.image.url }}"
-                         alt="{{ i.product.title }}">
-                {% else %}
-                    <img height="200"
-                         class="card-img-top"
-                         src="{% static 'images/14pro2.jfif' %}"
-                         alt="No image">
-                {% endif %}
-
-                <div class="card-body">
-                    <h6 class="card-title">{{ i.product.title }}</h6>
-                    <span class="card-text">
-                        <small>$ {{ i.product.price }}</small>
-                    </span>
-
-                    <div class="buttons d-flex justify-content-between mt-2">
-                        <i class="bi bi-bookmark-fill"></i>
-                        <a href="{% url 'products:detail' i.product.id %}"
-                           class="btn btn-outline-primary btn-sm">
-                            Details
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product Card End -->
+    {% if wishlists %}
+        <div class="products-grid">
+            {% for w in wishlists %}
+                {% with product=w.product %}
+                    {% url 'users:addremovewishlist' product.id as wishlist_url %}
+                    {% include 'partials/product_card.html' with product=product wishlist_url=wishlist_url wishlist_icon='bi-heart-fill' wishlist_title='Remove from wishlist' %}
+                {% endwith %}
             {% endfor %}
         </div>
-    </div>
+    {% else %}
+        {% include 'partials/empty_state.html' with icon='bi-heart' title='No saved products yet' message='Browse the homepage and tap the heart to save items.' %}
+    {% endif %}
 </div>
-<!-- Product Cart End -->
 {% endblock content %}

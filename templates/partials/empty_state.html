@@ -1,0 +1,9 @@
+{# Reusable empty state. Required: title. Optional: icon, message #}
+
+<div class="no-comments">
+  <div class="no-comments-icon">
+    {% if icon %}<i class="bi {{ icon }}"></i>{% else %}<i class="bi bi-inbox"></i>{% endif %}
+  </div>
+  <h5 class="no-comments-title">{{ title }}</h5>
+  {% if message %}<p class="no-comments-text">{{ message }}</p>{% endif %}
+</div>
