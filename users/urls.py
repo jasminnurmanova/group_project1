@@ -1,4 +1,4 @@
-from .views import (SignupView, logout, ProfileView, UpdateProfileView,WishlistView, AddRemoveWishlistView,RecentlyViewedView, messenger)
+from .views import *
 from django.urls import path
 app_name='users'
 
@@ -19,4 +19,3 @@ urlpatterns=[
     path('deposit', DepositRequestView.as_view(), name='deposit'),
 ]
 
-]
