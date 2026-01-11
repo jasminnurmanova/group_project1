@@ -1,4 +1,8 @@
-from .views import (SignupView, logout, ProfileView, UpdateProfileView,WishlistView, AddRemoveWishlistView,RecentlyViewedView, messenger)
+from .views import (SignupView, logout, ProfileView,
+                    UpdateProfileView,WishlistView,
+                    AddRemoveWishlistView,RecentlyViewedView,
+                    messenger, CartView, CartUpdateView, CartCreateView,
+                    OrderCreateView, DepositRequestView)
 from django.urls import path
 app_name='users'
 
@@ -11,5 +15,10 @@ urlpatterns=[
     path('wishlists/', WishlistView.as_view(), name='wishlists'),
     path('recently-viewed', RecentlyViewedView.as_view(), name='recently_viewed'),
     path('profile/<int:pk>/messenger/', messenger, name='messenger'),
-
+    path('cart/', CartView.as_view(), name='cart'),
+    path('add-to-cart/<int:product_id>', CartCreateView.as_view(), name='add-to-cart'),
+    path('cart-update/<int:cart_id>/', CartUpdateView.as_view(), name='cart-update'),
+    path('order-create', OrderCreateView.as_view(), name='order-create'),
+    path('deposit', DepositRequestView.as_view(), name='deposit'),
 ]
+

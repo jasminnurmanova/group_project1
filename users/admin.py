@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Wishlist, Chat, Message
+from .models import *
 from products.models import Comment
 from django.contrib.auth.models import Group
 
@@ -48,3 +48,46 @@ admin.site.register(Wishlist, WishlistAdminView)
 admin.site.register(Chat, ChatAdminView)
 admin.site.register(Message, MessageAdminView)
 admin.site.unregister(Group)
+
+admin.site.register(Cart)
+admin.site.register(OrderItem)
+
+
+@admin.register(DepositRequest)
+class DepositRequestAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'status', 'amount']
+    list_filter = ['status']
+    actions = ['approved_deposit', 'cancelled_deposit']
+
+    def approved_deposit(self, request, queryset):
+        count = 0
+        for deposit in queryset.filter(status='pending'):
+            deposit.user.balance += deposit.amount
+            deposit.user.save()
+
+            deposit.status = 'approved'
+            deposit.save()
+
+            count += 1
+        self.message_user(request, f"{count} ta sorov qabul qilindi")
+
+    def cancelled_deposit(self, request, queryset):
+        count = 0
+        for deposit in queryset.filter(status='pending'):
+            deposit.status = 'cancelled'
+            deposit.save()
+            count += 1
+        self.message_user(request, f"{count} ta sorov bekor qilindi")
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'first_name', 'last_name', 'status']
+    list_filter = ['status']
+    actions = ['paid_order', 'cancelled_order']
+
+    def paid_order(self, request, queryset):
+        for order in queryset.filter(status='pending'):
+            order.status = 'paid'
+            order.save()
+        self.message_user(request, 'Qabul qilindi')
