@@ -1,4 +1,4 @@
-from .views import (SignupView, logout, ProfileView, UpdateProfileView,WishlistView, AddRemoveWishlistView,RecentlyViewedView, messenger)
+from .views import (SignupView, logout, ProfileView, UpdateProfileView,WishlistView, AddRemoveWishlistView,RecentlyViewedView, messenger, messenger_inbox)
 from django.urls import path
 app_name='users'
 
@@ -10,6 +10,7 @@ urlpatterns=[
     path('addremovewishlist/<int:product_id>', AddRemoveWishlistView.as_view(), name='addremovewishlist'),
     path('wishlists/', WishlistView.as_view(), name='wishlists'),
     path('recently-viewed', RecentlyViewedView.as_view(), name='recently_viewed'),
+    path('messenger/', messenger_inbox, name='messenger_inbox'),
     path('profile/<int:pk>/messenger/', messenger, name='messenger'),
 
 ]

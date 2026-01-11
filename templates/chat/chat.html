@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Chat with {{ recipient.username }}{% endblock %}
+{% block title %}{% if recipient %}Chat with {{ recipient.username }}{% else %}Messenger{% endif %}{% endblock %}
 {% block content %}
     <main class="chats-main">
         <div class="chats-container">
@@ -13,7 +13,7 @@
                     {% if all_chats %}
                         {% for c in all_chats %}
                             {% if c.user1 == user %}
-                                <a href="{% url 'users:messenger' c.user2.id %}" class="chat-item {% if c.id == chat.id %}active{% endif %}">
+                                <a href="{% url 'users:messenger' c.user2.id %}" class="chat-item {% if chat and c.id == chat.id %}active{% endif %}">
                                     <div class="chat-info">
                                         <div class="chat-username">{{ c.user2.username }}</div>
                                         <div class="chat-preview">{{ c.messages.last.content|default:"No messages yet"|truncatewords:5 }}</div>
@@ -25,7 +25,7 @@
                                     </div>
                                 </a>
                             {% else %}
-                                <a href="{% url 'users:messenger' c.user1.id %}" class="chat-item {% if c.id == chat.id %}active{% endif %}">
+                                <a href="{% url 'users:messenger' c.user1.id %}" class="chat-item {% if chat and c.id == chat.id %}active{% endif %}">
                                     <div class="chat-info">
                                         <div class="chat-username">{{ c.user1.username }}</div>
                                         <div class="chat-preview">{{ c.messages.last.content|default:"No messages yet"|truncatewords:5 }}</div>
@@ -46,6 +46,7 @@
 
             <!-- Right Side - Messenger -->
             <div class="messenger">
+                {% if recipient and chat %}
                 <!-- Messenger Header -->
                 <div class="messenger-header">
                     <div class="header-info">
@@ -88,6 +89,19 @@
                         <button type="submit" class="btn btn-primary send-btn">Send 📤</button>
                     </div>
                 </form>
+                {% else %}
+                <div class="messenger-header">
+                    <div class="header-info">
+                        <h2 class="mb-1">Messenger</h2>
+                        <small class="text-muted">Select a chat on the left to start messaging.</small>
+                    </div>
+                </div>
+                <div class="messages-container" id="messages-container">
+                    <div class="no-messages-container">
+                        <p class="no-messages">💬 No conversation selected.</p>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </main>

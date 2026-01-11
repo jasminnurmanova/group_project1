@@ -88,6 +88,23 @@ class RecentlyViewedView(View):
 
 
 @login_required(login_url='login')
+def messenger_inbox(request):
+    sender = request.user
+
+    all_chats = Chat.objects.filter(
+        Q(user1=sender) | Q(user2=sender)
+    ).order_by('-updated_at')
+
+    # Reuse the same chat UI, but with no active conversation selected.
+    return render(request, 'chat/chat.html', {
+        'recipient': None,
+        'chat': None,
+        'messages': [],
+        'all_chats': all_chats,
+    })
+
+
+@login_required(login_url='login')
 def messenger(request, pk):
     recipient = get_object_or_404(CustomUser, id=pk)
     sender = request.user

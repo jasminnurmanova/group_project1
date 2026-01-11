@@ -76,6 +76,9 @@
                     <li><a class="dropdown-item" href="{% url 'users:profile' request.user %}">
                       <i class="bi bi-person"></i> My Profile
                     </a></li>
+                    <li><a class="dropdown-item" href="{% url 'users:messenger_inbox' %}">
+                      <i class="bi bi-chat-dots"></i> Messenger
+                    </a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
                       <form method="post" action="{% url 'logout' %}" style="margin: 0;">
