@@ -5,6 +5,7 @@ class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=17, blank=True, null=True)
     tg_username = models.CharField(max_length=30, blank=True)
     avatar = models.ImageField(upload_to='avatars/', default='avatars/default.jpg')
+    balance = models.DecimalField(max_digits=15, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -71,3 +72,73 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['created_at']
+
+
+class Cart(models.Model):
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_cart')
+    product = models.ForeignKey("products.Product", on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.author.username}"
+
+
+class Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('cancelled', 'Cancelled'),
+    )
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
+    address = models.CharField(max_length=256)
+    phone = models.CharField(max_length=16)
+    email = models.CharField(max_length=64)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    tg_username = models.CharField(max_length=32)
+    total_amount = models.DecimalField(max_digits=15, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.owner.username
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=15, decimal_places=2)
+    qnt = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"#{self.order.first_name} - {self.product.title}"
+
+
+class DepositRequest(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('cancelled', 'Cancelled'),
+    )
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='deposit_request')
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+    def __str__(self):
+        return self.user.username
+
+
+class BalanceHistory(models.Model):
+    TYPE_CHOICES = (
+        ('in', 'Kirim'),
+        ('out', 'Chiqim'),
+    )
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_balace')
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    type = models.CharField(max_length=8, choices=TYPE_CHOICES)
+    description = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} | {self.amount} | {self.type}"

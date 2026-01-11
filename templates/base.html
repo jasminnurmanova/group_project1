@@ -50,6 +50,12 @@
                   <i class="bi bi-clock-history"></i> Recently Viewed
                 </a>
               </li>
+            <li class="nav-item">
+  <a class="nav-link" href="{% url 'users:cart' %}">
+    <i class="bi bi-cart"></i> Cart
+  </a>
+</li>
+
             </ul>
             <div class="d-flex gap-2 align-items-center">
                 <form class="d-flex" role="search" action="{% url 'main:index' %}" method="get" style="min-width: 250px;">

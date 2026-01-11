@@ -1,10 +1,10 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import logout
-from .forms import SignupForm,UpdateProfileForm
+from .forms import *
 from django.views import View
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from .models import CustomUser, Wishlist, Chat, Message
+from .models import *
 from products.models import Product
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -145,3 +145,95 @@ def messenger(request, pk):
         'messages': messages_list,
         'all_chats': all_chats
     })
+
+
+class CartView(LoginRequiredMixin, View):
+    def get(self, request):
+        carts = request.user.user_cart.select_related('product')
+        total = sum(cart.quantity * cart.product.price for cart in carts)
+        context = {
+            'carts': carts,
+            'total': total
+        }
+        return render(request, 'cart.html', context)
+
+
+class CartCreateView(LoginRequiredMixin, View):
+    def post(self, request, product_id):
+        product = get_object_or_404(Product, id=product_id)
+        cart, created = Cart.objects.get_or_create(author=request.user, product=product)
+        if not created:
+            cart.quantity += 1
+        cart.save()
+
+        return redirect('users:cart')
+
+
+class CartUpdateView(LoginRequiredMixin, View):
+    def post(self, request, cart_id):
+        cart = get_object_or_404(Cart, id=cart_id, author=request.user)
+        action = request.POST.get('action')
+
+        if action == 'increase':
+            cart.quantity += 1
+            cart.save()
+
+        elif action == 'decrease':
+            if cart.quantity > 1:
+                cart.quantity -= 1
+                cart.save()
+            else:
+                cart.delete()
+
+        return redirect('users:cart')
+
+
+class OrderCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = OrderForm()
+        carts = Cart.objects.filter(author=request.user)
+        total = sum(cart.quantity * cart.product.price for cart in carts)
+        return render(request, 'order_create.html', {'form': form, 'total': total})
+
+    def post(self, request):
+        form = OrderForm(request.POST)
+        carts = Cart.objects.filter(author=request.user)
+        total = sum(cart.quantity * cart.product.price for cart in carts)
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.owner = request.user
+            order.total_amount = total
+            order.save()
+            carts.delete()
+            return redirect('main:index')
+        return render(request, 'order_create.html', {'form': form, 'total': total})
+
+
+class DepositRequestView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = DepositRequestForm()
+        user_requests = DepositRequest.objects.filter(user=request.user).order_by('-id')
+        context = {
+            'form': form,
+            'user_requests': user_requests,
+            'balance': request.user.balance
+        }
+        return render(request, 'deposit.html', context)
+
+    def post(self, request):
+        form = DepositRequestForm(request.POST)
+        if form.is_valid():
+            deposit = form.save(commit=False)
+            deposit.user = request.user
+            deposit.status = 'pending'
+            deposit.save()
+            messages.success(request, 'Deposit sorovi mufovavaqiyatli yuborildi! Admin tasdiqlashini kuting')
+            return redirect('users:deposit')
+        user_requests = DepositRequest.objects.filter(user=request.user, status='pending')
+        context = {
+            'form': form,
+            'user_requests': user_requests,
+            'balance': request.user.balance
+        }
+        messages.success(request, 'Ooo nimadir xato ketdi!')
+        return render(request, 'deposit.html', context)

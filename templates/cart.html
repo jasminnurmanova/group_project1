@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    Savat
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="mb-4">🛒 Savating</h2>
+
+    {% if carts %}
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Mahsulot</th>
+                    <th>Narx</th>
+                    <th>Soni</th>
+                    <th>Jami</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carts %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.product.price }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+
+                            <!-- MINUS -->
+                            <form method="post" action="{% url 'users:cart-update' item.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="decrease">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">−</button>
+                            </form>
+
+                            <strong>{{ item.quantity }}</strong>
+
+                            <!-- PLUS -->
+                            <form method="post" action="{% url 'users:cart-update' item.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="increase">
+                                <button type="submit" class="btn btn-sm btn-outline-success">+</button>
+                            </form>
+
+                        </div>
+                    </td>
+
+                    <td>{{ item.product.price|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-end mt-3">
+            <h4>Umumiy summa: <strong>{{ total }}</strong></h4>
+        </div>
+
+        <div class="text-end mt-3">
+            <form method="post" action="{% url 'users:order-create' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">
+                    Buyurtma berish
+                </button>
+            </form>
+        </div>
+
+    {% else %}
+        <div class="alert alert-warning">
+            Savating bo‘sh 😕
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Create Order{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 max-w-2xl bg-white shadow-md rounded-lg mt-8">
+    <h1 class="text-2xl font-bold mb-6 text-gray-800">Create New Order</h1>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-red-600 text-sm">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <h3>{{ total }}</h3>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+            Place Order
+        </button>
+        <a href="{% url 'users:cart' %}" class="ml-4 text-blue-600 hover:underline">Cancel</a>
+    </form>
+</div>
+{% endblock %}
