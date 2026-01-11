@@ -12,7 +12,7 @@ class CustomUserAdminView(admin.ModelAdmin):
         extra = 0
 
     empty_value_display = '-empty-'
-    list_display = ['id', 'username', 'email', 'phone_number', 'tg_username']
+    list_display = ['id', 'username', 'email', 'phone_number', 'tg_username', 'balance', 'created_at']
     search_fields = ['id', 'username', 'email', 'phone_number', 'tg_username']
     ordering = ['-created_at']
     fields = [("first_name", "last_name",'username'), ('email', 'phone_number', 'tg_username'), 'avatar', 'password']
@@ -63,9 +63,16 @@ class DepositRequestAdmin(admin.ModelAdmin):
         count = 0
         for deposit in queryset.filter(status='pending'):
             deposit.user.balance += deposit.amount
-            deposit.user.save()
+
+            BalanceHistory.objects.create(
+                user=deposit.user,
+                amount=deposit.amount,
+                type='deposit',
+                description='Account deposit approved'
+            )
 
             deposit.status = 'approved'
+            deposit.user.save()
             deposit.save()
 
             count += 1
@@ -89,5 +96,33 @@ class OrderAdmin(admin.ModelAdmin):
     def paid_order(self, request, queryset):
         for order in queryset.filter(status='pending'):
             order.status = 'paid'
+
+            if order.owner.balance >= order.total_amount:
+                for item in order.items.all():
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        price=item.price,
+                        qnt=item.qnt
+                    )
+
+                BalanceHistory.objects.create(
+                    user=order.owner,
+                    amount=order.total_amount,
+                    type='out',
+                    description='Order payment'
+                )
+                order.owner.balance -= order.total_amount
+                order.owner.save()
+                order.save()
+
+            self.message_user(request, 'Qabul qilindi')
+        else:
+            self.message_user(request, 'Mijoz balansida yetarli mablag yoq')
+            self.cancelled_order(request, queryset)
+
+    def cancelled_order(self, request, queryset):
+        for order in queryset.filter(status='pending'):
+            order.status = 'cancelled'
             order.save()
-        self.message_user(request, 'Qabul qilindi')
+        self.message_user(request, 'Bekor qilindi')
