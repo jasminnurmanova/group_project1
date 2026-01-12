@@ -7,9 +7,12 @@
     {% endif %}
 
     {% if wishlist_url %}
-      <a href="{{ wishlist_url }}" class="wishlist-btn" title="{{ wishlist_title|default:'Save' }}">
-        <i class="bi {{ wishlist_icon|default:'bi-heart' }}"></i>
-      </a>
+      <form method="post" action="{{ wishlist_url }}" style="display:inline;" class="wishlist-form">
+        {% csrf_token %}
+        <button type="submit" class="wishlist-btn" title="{{ wishlist_title|default:'Save' }}" style="border:none; background:none; cursor:pointer;">
+          <i class="bi {{ wishlist_icon|default:'bi-heart' }}"></i>
+        </button>
+      </form>
     {% endif %}
   </div>
 

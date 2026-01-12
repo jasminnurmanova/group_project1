@@ -500,6 +500,24 @@ document.addEventListener("DOMContentLoaded", function () {
     btn.addEventListener("click", () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     });
+
+    // Prevent double submission on wishlist forms - aggressive version
+    document.querySelectorAll('.wishlist-form').forEach(form => {
+        let submitted = false;
+        form.addEventListener('submit', function(e) {
+            if (submitted) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            submitted = true;
+            const button = form.querySelector('button');
+            if (button) {
+                button.disabled = true;
+                button.style.pointerEvents = 'none';
+            }
+        });
+    });
 });
 </script>
 

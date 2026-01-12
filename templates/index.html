@@ -104,17 +104,12 @@
             {% for product in products %}
                 <!-- Product Card Wrapper -->
                 <div class="product-wrapper">
-                    <!-- Wishlist Heart Button -->
                     {% if request.user.is_authenticated %}
-                        <form method="post" action="{% url 'users:addremovewishlist' product.id %}" class="wishlist-form">
-                            {% csrf_token %}
-                            <button type="submit" class="wishlist-btn {% if product in request.user.wishlist.all %}active{% endif %}">
-                                <i class="bi bi-heart{% if product in request.user.wishlist.all %}-fill{% endif %}"></i>
-                            </button>
-                        </form>
+                        {% url 'users:addremovewishlist' product.id as wl_url %}
+                        {% include 'partials/product_card.html' with product=product show_seller=True wishlist_url=wl_url %}
+                    {% else %}
+                        {% include 'partials/product_card.html' with product=product show_seller=True %}
                     {% endif %}
-
-                    {% include 'partials/product_card.html' with product=product show_seller=True %}
 
                     <!-- Action Buttons -->
                     <div class="product-actions">
@@ -139,69 +134,5 @@
     {% endif %}
 </div>
 
-<script>
-// AJAX functionality for wishlist (no page reload)
-document.addEventListener('DOMContentLoaded', function() {
-    const wishlistForms = document.querySelectorAll('.wishlist-form');
-
-    wishlistForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const btn = this.querySelector('.wishlist-btn');
-            const icon = btn.querySelector('i');
-
-            fetch(this.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': this.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: new FormData(this)
-            })
-            .then(response => {
-                // Check if response is JSON
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    // If not JSON, just toggle the button
-                    throw new Error('Not JSON response');
-                }
-            })
-            .then(data => {
-                if (data.added) {
-                    btn.classList.add('active');
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                } else {
-                    btn.classList.remove('active');
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
-                }
-            })
-            .catch(error => {
-                // Fallback: just toggle the visual state without reload
-                console.log('Using fallback toggle');
-                if (btn.classList.contains('active')) {
-                    btn.classList.remove('active');
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
-                } else {
-                    btn.classList.add('active');
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                }
-
-                // Still send the request in background
-                fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form)
-                });
-            });
-        });
-    });
-});
-</script>
 
 {% endblock %}
