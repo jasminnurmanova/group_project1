@@ -143,14 +143,14 @@
 // AJAX functionality for wishlist (no page reload)
 document.addEventListener('DOMContentLoaded', function() {
     const wishlistForms = document.querySelectorAll('.wishlist-form');
-    
+
     wishlistForms.forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const btn = this.querySelector('.wishlist-btn');
             const icon = btn.querySelector('i');
-            
+
             fetch(this.action, {
                 method: 'POST',
                 headers: {
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon.classList.remove('bi-heart');
                     icon.classList.add('bi-heart-fill');
                 }
-                
+
                 // Still send the request in background
                 fetch(form.action, {
                     method: 'POST',

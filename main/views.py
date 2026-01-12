@@ -18,6 +18,7 @@ class IndexView(View):
     def get(self, request):
         products = Product.objects.all()
         q=request.GET.get('q', '')
+
         if q:
             products = products.filter(title__icontains=q)
         return render(request, "index.html", {'products':products})

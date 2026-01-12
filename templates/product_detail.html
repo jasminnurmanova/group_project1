@@ -61,9 +61,15 @@
                         <i class="bi bi-trash"></i> Delete
                     </a>
                 {% else %}
-                    <a class="action-btn btn-contact" href="mailto:{{ product.author.email }}">
-                        <i class="bi bi-envelope-fill"></i> Email Seller
-                    </a>
+
+                    <!-- ADD TO CART BUTTON (ONLY THIS IS ADDED) -->
+                    <form action="{% url 'users:add-to-cart' product.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn btn-cart">
+                            <i class="bi bi-cart-plus-fill"></i> Add to Cart
+                        </button>
+                    </form>
+
                     <a class="action-btn btn-contact" href="{% url 'users:messenger' pk=product.author.pk %}">
                         <i class="bi bi-chat-dots-fill"></i> Message
                     </a>
@@ -146,7 +152,9 @@
                         </div>
                         <div class="product-card-body">
                             <h5 class="product-title">{{ i.title }}</h5>
-                            <p class="product-price" style="margin: 0; font-size: 1.4rem;">{{ i.price }} <span class="product-price-small">so'm</span></p>
+                            <p class="product-price" style="margin: 0; font-size: 1.4rem;">
+                                {{ i.price }} <span class="product-price-small">so'm</span>
+                            </p>
                             <a href="{% url 'products:detail' i.id %}" class="product-cta" style="margin-top: 16px;">
                                 View Details <i class="bi bi-arrow-right"></i>
                             </a>

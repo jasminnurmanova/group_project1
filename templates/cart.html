@@ -2,22 +2,22 @@
 {% load static %}
 
 {% block title %}
-    Savat
+    Cart
 {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
 
-    <h2 class="mb-4">🛒 Savating</h2>
+    <h2 class="mb-4">🛒 Your Cart</h2>
 
     {% if carts %}
         <table class="table table-bordered align-middle">
             <thead>
                 <tr>
-                    <th>Mahsulot</th>
-                    <th>Narx</th>
-                    <th>Soni</th>
-                    <th>Jami</th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
                     <th>Delete</th>
                 </tr>
             </thead>
@@ -61,21 +61,21 @@
         </table>
 
         <div class="text-end mt-3">
-            <h4>Umumiy summa: <strong>{{ total }}</strong></h4>
+            <h4>Total Amount: <strong>{{ total }}</strong></h4>
         </div>
 
         <div class="text-end mt-3">
             <form method="post" action="{% url 'users:order-create' %}">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-success">
-                    Buyurtma berish
+                    Place Order
                 </button>
             </form>
         </div>
 
     {% else %}
         <div class="alert alert-warning">
-            Savating bo‘sh 😕
+            Your cart is empty 😕
         </div>
     {% endif %}
 

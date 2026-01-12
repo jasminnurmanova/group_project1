@@ -56,16 +56,28 @@ class UpdateProfileView(View,LoginRequiredMixin):
 class AddRemoveWishlistView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request, product_id):
+    def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
-        wishlist_product = Wishlist.objects.filter(author=request.user, product=product)
-        if wishlist_product:
-            wishlist_product.delete()
-            messages.info(request, 'Removed.')
+
+        wishlist_item = Wishlist.objects.filter(
+            author=request.user,
+            product=product
+        )
+
+        if wishlist_item.exists():
+            wishlist_item.delete()
+            messages.info(request, "Wishlistdan olib tashlandi")
         else:
-            Wishlist.objects.create(author=request.user, product=product)
-            messages.info(request, 'Wishlist.')
-        return redirect(request.META.get("HTTP_REFERER"))
+            Wishlist.objects.create(
+                author=request.user,
+                product=product
+            )
+            messages.success(request, "Wishlistga qoshildi")
+
+        return redirect(request.META.get("HTTP_REFERER", "main:index"))
+
+
+
 
 
 class WishlistView(LoginRequiredMixin, View):

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Buyurtma berish - E-Bazar{% endblock %}
+{% block title %}Place Order - E-Bazar{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -402,7 +402,7 @@
         <div class="checkout-header">
             <h1>
                 <span class="checkout-header-icon">🛍️</span>
-                Buyurtmani tasdiqlash
+                Confirm Order
             </h1>
         </div>
         
@@ -458,8 +458,8 @@
                 <div class="promo-section">
                     <div class="promo-label">
                         <i class="fas fa-tags" style="color: #fdcb6e;"></i>
-                        Promokod
-                        <span class="promo-tag">AKSIYA</span>
+                        Promo Code
+                        <span class="promo-tag">SALE</span>
                     </div>
                     
                     <div class="promo-input-group">
@@ -470,7 +470,7 @@
                                placeholder="PROMO2025">
                         <button type="button" class="promo-btn" onclick="applyPromo()">
                             <i class="fas fa-check-circle"></i>
-                            Qo'llash
+                            Apply
                         </button>
                     </div>
                     
@@ -480,18 +480,18 @@
                 <!-- Price Summary -->
                 <div class="price-summary">
                     <div class="price-row">
-                        <span class="price-label">Mahsulotlar:</span>
-                        <span class="price-value" id="original-total">{{ total|floatformat:0 }} so'm</span>
+                        <span class="price-label">Products:</span>
+                        <span class="price-value" id="original-total">{{ total|floatformat:0 }} sum</span>
                     </div>
                     
                     <div class="price-row" id="discount-row" style="display: none;">
-                        <span class="price-label">Chegirma:</span>
-                        <span class="price-discount" id="discount-amount">0 so'm</span>
+                        <span class="price-label">Discount:</span>
+                        <span class="price-discount" id="discount-amount">0 sum</span>
                     </div>
                     
                     <div class="price-row price-total">
-                        <span class="price-label">Jami to'lov:</span>
-                        <span class="price-value" id="final-price">{{ total|floatformat:0 }} so'm</span>
+                        <span class="price-label">Total Payment:</span>
+                        <span class="price-value" id="final-price">{{ total|floatformat:0 }} sum</span>
                     </div>
                 </div>
                 
@@ -499,21 +499,21 @@
                 <div class="info-box">
                     <h4>
                         <i class="fas fa-truck"></i>
-                        Yetkazib berish haqida
+                        About Delivery
                     </h4>
-                    <p>Buyurtmangiz 2-3 ish kuni ichida yetkazib beriladi. Bepul yetkazib berish!</p>
+                    <p>Your order will be delivered within 2-3 business days. Free delivery!</p>
                 </div>
                 
                 <!-- Submit Button -->
                 <button type="submit" class="btn-submit" id="submit-btn">
                     <span class="btn-icon">💳</span>
-                    <span>Buyurtmani tasdiqlash</span>
+                    <span>Confirm Order</span>
                     <span class="btn-shimmer"></span>
                 </button>
                 
                 <a href="{% url 'users:cart' %}" class="btn-cancel">
                     <i class="fas fa-arrow-left"></i>
-                    Bekor qilish
+                    Cancel
                 </a>
             </form>
         </div>
@@ -525,7 +525,7 @@
 document.getElementById('order-form').addEventListener('submit', function() {
     const btn = document.getElementById('submit-btn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
 });
 
 // Promocode function
@@ -536,7 +536,7 @@ function applyPromo() {
     
     if (!promoCode) {
         feedback.className = 'promo-feedback error';
-        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Promokodni kiriting!';
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Enter a promo code!';
         return;
     }
     
@@ -555,18 +555,18 @@ function applyPromo() {
         
         // Show discount
         document.getElementById('discount-row').style.display = 'flex';
-        document.getElementById('discount-amount').textContent = `${discountAmount.toLocaleString()} so'm (${discount}%)`;
-        document.getElementById('final-price').textContent = `${finalPrice.toLocaleString()} so'm`;
+        document.getElementById('discount-amount').textContent = `${discountAmount.toLocaleString()} sum (${discount}%)`;
+        document.getElementById('final-price').textContent = `${finalPrice.toLocaleString()} sum`;
         
         // Success feedback
         feedback.className = 'promo-feedback success';
-        feedback.innerHTML = `<i class="fas fa-check-circle"></i> Promokod qo'llandi! ${discount}% chegirma`;
+        feedback.innerHTML = `<i class="fas fa-check-circle"></i> Promo code applied! ${discount}% discount`;
         
         // Disable input
         promoInput.disabled = true;
     } else {
         feedback.className = 'promo-feedback error';
-        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Noto\'g\'ri promokod!';
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Invalid promo code!';
     }
 }
 
