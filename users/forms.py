@@ -3,9 +3,18 @@ from .models import CustomUser, Order, DepositRequest
 from django.contrib.auth.forms import UserCreationForm
 
 class SignupForm(UserCreationForm):
+    avatar = forms.ImageField(required=False)
+
     class Meta:
-        model=CustomUser
-        fields=['first_name','last_name','username','email', 'phone_number','tg_username','avatar']
+        model = CustomUser
+        fields = [
+            'first_name', 'last_name',
+            'username', 'email',
+            'phone_number', 'tg_username',
+            'avatar',
+            'password1', 'password2',
+        ]
+
 
 class UpdateProfileForm(forms.ModelForm):
     class Meta:

@@ -9,10 +9,10 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 
-@login_required
+@login_required(login_url='/account/login/')
 def new_product(request):
     if request.method == "GET":
-        form = NewProductForm
+        form = NewProductForm()
         return render (request,'product_new.html',{'form':form})
 
     elif request.method=="POST":

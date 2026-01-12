@@ -14,10 +14,10 @@ urlpatterns=[
     path('profile/<int:pk>/messenger/', messenger, name='messenger'),
     path('cart/', CartView.as_view(), name='cart'),
     path('add-to-cart/<int:product_id>/', CartCreateView.as_view(), name='add-to-cart'),
-    path('cart-update/<int:cart_id>/', CartUpdateView.as_view(), name='cart-update'),
+    path('cart-update/<int:cart_id>/', CartUpdateView.as_view(), name='cart-update'), #1
     path('order-create', OrderCreateView.as_view(), name='order-create'),
     path('deposit', DepositRequestView.as_view(), name='deposit'),
-    path('balance-history', BalaceHistoryView.as_view(), name='balance-history'),
-    path('my-orders', OrdersView.as_view(), name='my-orders'),
+    path('balance-history', BalaceHistoryView.as_view(), name='balance-history'),#2
+    path('my-orders', OrdersView.as_view(), name='my-orders'),#3
 ]
 

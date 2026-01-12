@@ -31,6 +31,10 @@
                     <div class="mt-3 d-flex gap-2 flex-wrap">
                         <a class="btn btn-warning" href="{% url 'users:update_profile' %}">Edit details</a>
                         <a class="btn btn-danger" href="{% url 'password_change' %}">Update Password</a>
+                        <a class="btn btn-danger" href="{% url 'users:balance-history' %}">Balance History</a>
+                        <a class="btn btn-danger" href="{% url 'users:my-orders' %}">My orders</a>
+
+
                     </div>
                 {% else %}
                     <div class="mt-3 d-flex gap-2 flex-wrap">

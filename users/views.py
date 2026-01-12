@@ -11,16 +11,24 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 class SignupView(View):
-    def get(self,request):
-        return render(request,'registration/signup.html',{'form':SignupForm})
 
-    def post(self,request):
-        form=SignupForm(data=request.POST)
+    def get(self, request):
+        form = SignupForm()
+        return render(request, 'registration/signup.html', {'form': form})
+
+    def post(self, request):
+        form = SignupForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request,'Your account is succesfully created ')
+            user = form.save(commit=False)
+
+            if 'avatar' in request.FILES:
+                user.avatar = request.FILES['avatar']
+
+            user.save()
+            messages.success(request, 'Your account is successfully created')
             return redirect('login')
-        return render(request,'registration/signup.html',{'form':form})
+
+        return render(request, 'registration/signup.html', {'form': form})
 
 
 
@@ -148,6 +156,7 @@ def messenger(request, pk):
 
 
 class CartView(LoginRequiredMixin, View):
+    login_url = '/account/login/'
     def get(self, request):
         carts = request.user.user_cart.select_related('product')
         total = sum(cart.quantity * cart.product.price for cart in carts)
@@ -159,6 +168,8 @@ class CartView(LoginRequiredMixin, View):
 
 
 class CartCreateView(LoginRequiredMixin, View):
+    login_url = '/account/login/'
+
     def post(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
         cart, created = Cart.objects.get_or_create(author=request.user, product=product)
@@ -170,6 +181,8 @@ class CartCreateView(LoginRequiredMixin, View):
 
 
 class CartUpdateView(LoginRequiredMixin, View):
+    login_url = '/account/login/'
+
     def post(self, request, cart_id):
         cart = get_object_or_404(Cart, id=cart_id, author=request.user)
         action = request.POST.get('action')
@@ -191,6 +204,8 @@ class CartUpdateView(LoginRequiredMixin, View):
 
 
 class OrderCreateView(LoginRequiredMixin, View):
+    login_url = '/account/login/'
+
     def get(self, request):
         form = OrderForm()
         carts = Cart.objects.filter(author=request.user)

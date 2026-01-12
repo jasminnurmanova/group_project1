@@ -53,6 +53,7 @@
     {% else %}
         <div class="alert alert-info">
             Hozircha balans bo‘yicha harakatlar mavjud emas.
+            <a href="{% url 'users:profile' request.user %}"
         </div>
     {% endif %}
 </div>
