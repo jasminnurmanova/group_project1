@@ -17,10 +17,7 @@ class UpdateProfileForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = [
-            'first_name', 'last_name', 'address',
-            'phone', 'email', 'tg_username'
-        ]
+        fields = ['first_name', 'last_name', 'address', 'phone', 'email', 'tg_username']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'w-full p-2 border rounded'}),
             'last_name': forms.TextInput(attrs={'class': 'w-full p-2 border rounded'}),

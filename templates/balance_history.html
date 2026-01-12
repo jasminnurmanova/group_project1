@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4">💰 Balans tarixi</h4>
+
+    {% if deposits %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Turi</th>
+                        <th>Miqdor</th>
+                        <th>Tavsif</th>
+                        <th>Sana</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deposit in deposits %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                {% if deposit.type == 'in' %}
+                                    <span class="badge bg-success">Kirim</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Chiqim</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if deposit.type == 'in' %}
+                                    <span class="text-success fw-bold">
+                                        +{{ deposit.amount|intcomma }} so‘m
+                                    </span>
+                                {% else %}
+                                    <span class="text-danger fw-bold">
+                                        -{{ deposit.amount|intcomma }} so‘m
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ deposit.description }}</td>
+
+                            <td>{{ deposit.created|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Hozircha balans bo‘yicha harakatlar mavjud emas.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

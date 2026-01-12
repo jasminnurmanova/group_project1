@@ -17,5 +17,7 @@ urlpatterns=[
     path('cart-update/<int:cart_id>/', CartUpdateView.as_view(), name='cart-update'),
     path('order-create', OrderCreateView.as_view(), name='order-create'),
     path('deposit', DepositRequestView.as_view(), name='deposit'),
+    path('balance-history', BalaceHistoryView.as_view(), name='balance-history'),
+    path('my-orders', OrdersView.as_view(), name='my-orders'),
 ]
 

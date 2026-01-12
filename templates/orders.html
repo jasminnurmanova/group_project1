@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+<h2 class="mb-4">Mening buyurtmalarim</h2> <br>
+{% for order in orders %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between">
+        <strong>Order #{{ order.id }}</strong>
+        <span class="badge 
+            {% if order.status == 'paid' %}bg-success
+            {% elif order.status == 'pending' %}bg-warning
+            {% else %}bg-danger{% endif %}">
+            {{ order.status }}
+        </span>
+    </div>
+
+    <div class="card-body">
+        <p><b>Jami:</b> {{ order.total_amount|floatformat:0 }}</p>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mahsulot</th>
+                    <th>Narx</th>
+                    <th>Soni</th>
+                    <th>Summa</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.title }}</td>
+                    <td>{{ item.price|floatformat:0 }}</td>
+                    <td>{{ item.qnt }}</td>
+                    <td>{{ item.price|floatformat:0 }} x {{ item.qnt }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% empty %}
+<p>Sizda hali orderlar yo‘q</p>
+{% endfor %}
+
+{% endblock %}

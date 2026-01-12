@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from decimal import Decimal
 from products.models import Comment
 from django.contrib.auth.models import Group
 
@@ -50,7 +51,13 @@ admin.site.register(Message, MessageAdminView)
 admin.site.unregister(Group)
 
 admin.site.register(Cart)
-admin.site.register(OrderItem)
+admin.site.register(BalanceHistory)
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['id', 'order', 'product', 'qnt']
+    list_filter = ['order', 'product']
+    ordering = ['-id']
 
 
 @admin.register(DepositRequest)
@@ -67,7 +74,7 @@ class DepositRequestAdmin(admin.ModelAdmin):
             BalanceHistory.objects.create(
                 user=deposit.user,
                 amount=deposit.amount,
-                type='deposit',
+                type='in',
                 description='Account deposit approved'
             )
 
@@ -87,39 +94,60 @@ class DepositRequestAdmin(admin.ModelAdmin):
         self.message_user(request, f"{count} ta sorov bekor qilindi")
 
 
+@admin.register(Promocode)
+class PromocodeAdmin(admin.ModelAdmin):
+    list_display = ['code', 'percent', 'valid_from', 'valid_to', 'active_status']
+    list_filter = ['valid_from', 'valid_to']
+    search_fields = ['code']
+
+    def active_status(self, obj):
+        from django.utils import timezone
+        now = timezone.now()
+        return now >= obj.valid_from and now <= obj.valid_to
+    active_status.boolean = True
+    active_status.short_description = 'Is Active'
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'first_name', 'last_name', 'status']
+    list_display = ['id', 'owner', 'first_name', 'last_name', 'status']
     list_filter = ['status']
     actions = ['paid_order', 'cancelled_order']
 
+
     def paid_order(self, request, queryset):
         for order in queryset.filter(status='pending'):
-            order.status = 'paid'
 
             if order.owner.balance >= order.total_amount:
-                for item in order.items.all():
-                    OrderItem.objects.create(
-                        order=order,
-                        product=item.product,
-                        price=item.price,
-                        qnt=item.qnt
-                    )
 
+                comission = order.total_amount * Decimal('0.10')
+
+                product_owners = order.items.first().product.author
+                product_owners.balance += (order.total_amount - comission)
+                product_owners.save()
+                
+                BalanceHistory.objects.create(
+                    user=product_owners,
+                    amount=(order.total_amount - comission),
+                    type='in',
+                    description='Product sold'
+                )
+                
                 BalanceHistory.objects.create(
                     user=order.owner,
                     amount=order.total_amount,
                     type='out',
                     description='Order payment'
                 )
+                order.status = 'paid'
                 order.owner.balance -= order.total_amount
                 order.owner.save()
                 order.save()
 
-            self.message_user(request, 'Qabul qilindi')
-        else:
-            self.message_user(request, 'Mijoz balansida yetarli mablag yoq')
-            self.cancelled_order(request, queryset)
+                self.message_user(request, 'Qabul qilindi')
+            else:
+                self.message_user(request, 'Mijoz balansida yetarli mablag yoq')
+                self.cancelled_order(request, queryset)
 
     def cancelled_order(self, request, queryset):
         for order in queryset.filter(status='pending'):

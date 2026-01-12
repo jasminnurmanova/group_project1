@@ -18,6 +18,7 @@
                     <th>Narx</th>
                     <th>Soni</th>
                     <th>Jami</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,8 +47,14 @@
 
                         </div>
                     </td>
-
-                    <td>{{ item.product.price|floatformat:2 }}</td>
+                    <td>{{ item.get_total_price|floatformat:2 }}</td>
+                    <td>
+                        <form method="post" action="{% url 'users:cart-update' item.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="btn btn-sm btn-outline-success">Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

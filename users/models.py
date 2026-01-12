@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from decimal import Decimal
+from django.utils import timezone
+from datetime import timedelta  
 
 class CustomUser(AbstractUser):
     phone_number = models.CharField(max_length=17, blank=True, null=True)
@@ -74,11 +77,36 @@ class Message(models.Model):
         ordering = ['created_at']
 
 
+
+class Promocode(models.Model):
+    code = models.CharField(max_length=13, unique=True)
+    percent = models.PositiveIntegerField()
+    valid_from = models.DateTimeField(auto_now_add=True)
+    valid_to = models.DateTimeField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.valid_to:
+            self.valid_to = timezone.now() + timedelta(days=13)
+        super().save(*args, **kwargs)
+
+    @property
+    def is_active(self):
+        now = timezone.now()
+        return self.valid_from <= now <= self.valid_to
+
+    def __str__(self):
+        return self.code
+
+
+
 class Cart(models.Model):
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_cart')
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     quantity = models.PositiveIntegerField(default=1)
+
+    def get_total_price(self):
+        return self.product.price * self.quantity
 
     def __str__(self):
         return f"{self.author.username}"
@@ -91,6 +119,7 @@ class Order(models.Model):
         ('cancelled', 'Cancelled'),
     )
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    promocode = models.ForeignKey(Promocode, on_delete=models.SET_NULL, null=True, blank=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     address = models.CharField(max_length=256)
@@ -100,6 +129,20 @@ class Order(models.Model):
     tg_username = models.CharField(max_length=32)
     total_amount = models.DecimalField(max_digits=15, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def discount_amount(self):
+        if self.promocode and self.promocode.is_active:
+            return (self.total_amount * Decimal(self.promocode.percent)) / Decimal('100')
+        return 0
+    
+    @property
+    def amount_after_discount(self):
+        return self.total_amount - self.discount_amount
+    
+    @property
+    def has_discount(self):
+        return self.discount_amount > 0
 
     def __str__(self):
         return self.owner.username
@@ -112,7 +155,7 @@ class OrderItem(models.Model):
     qnt = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"#{self.order.first_name} - {self.product.title}"
+        return f"#{self.order.owner.first_name} - {self.product.title}"
 
 
 class DepositRequest(models.Model):
@@ -142,3 +185,5 @@ class BalanceHistory(models.Model):
 
     def __str__(self):
         return f"{self.user.username} | {self.amount} | {self.type}"
+    
+

@@ -184,6 +184,8 @@ class CartUpdateView(LoginRequiredMixin, View):
                 cart.save()
             else:
                 cart.delete()
+        elif action == 'delete':
+            cart.delete()
 
         return redirect('users:cart')
 
@@ -198,15 +200,57 @@ class OrderCreateView(LoginRequiredMixin, View):
     def post(self, request):
         form = OrderForm(request.POST)
         carts = Cart.objects.filter(author=request.user)
+        if not carts.exists(): 
+            messages.error(request, 'Your cart is empty.')
+            return redirect('users:cart')
+        
         total = sum(cart.quantity * cart.product.price for cart in carts)
+
+
+        promo_code_input = request.POST.get('promocode', '').strip()
+        discount = 0
+        promocode = None
+
+        if promo_code_input:
+            try:
+                promocode = Promocode.objects.get(code__iexact=promo_code_input)
+                if promocode.is_active:
+                    discount = total * Decimal(promocode.percent) / Decimal('100')
+                else:
+                    messages.error(request, 'Promocode is inactive or expired.')
+            except Promocode.DoesNotExist:
+                messages.error(request, 'Promocode does not exist.')
+
+        total -= Decimal(discount)
+
+
         if form.is_valid():
             order = form.save(commit=False)
+            if promocode and promocode.is_active:
+                order.promocode = promocode
             order.owner = request.user
             order.total_amount = total
+            order.status = 'pending'
             order.save()
+
+            for cart in carts:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart.product,
+                    price=cart.product.price,
+                    qnt=cart.quantity
+                )
             carts.delete()
-            return redirect('main:index')
+            messages.success(request, 'Order created successfully!')
+            return redirect('users:my-orders')
         return render(request, 'order_create.html', {'form': form, 'total': total})
+    
+
+class OrdersView(LoginRequiredMixin, View):
+    def get(self, request):
+        orders = Order.objects.filter(owner=request.user).prefetch_related('items').order_by('-id')
+        return render(request, 'orders.html', {'orders': orders})
+
 
 
 class DepositRequestView(LoginRequiredMixin, View):
@@ -237,3 +281,9 @@ class DepositRequestView(LoginRequiredMixin, View):
         }
         messages.success(request, 'Ooo nimadir xato ketdi!')
         return render(request, 'deposit.html', context)
+    
+
+class BalaceHistoryView(LoginRequiredMixin, View):
+    def get(self, request):
+        deposits = BalanceHistory.objects.filter(user=request.user).order_by('-id')
+        return render(request, 'balance_history.html', {'deposits': deposits})

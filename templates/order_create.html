@@ -1,32 +1,581 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Create Order{% endblock %}
+{% block title %}Buyurtma berish - E-Bazar{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Container */
+.checkout-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Card */
+.checkout-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header */
+.checkout-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    color: white;
+    text-align: center;
+}
+
+.checkout-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.checkout-header-icon {
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Form */
+.checkout-form {
+    padding: 2.5rem;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-label i {
+    color: #667eea;
+    margin-right: 0.5rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e1e8ed;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.form-input::placeholder {
+    color: #b2bec3;
+}
+
+.form-error {
+    color: #d63031;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Promocode Section */
+.promo-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    border: 2px dashed #dee2e6;
+}
+
+.promo-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.75rem;
+}
+
+.promo-tag {
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.promo-input-group {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.promo-input {
+    flex: 1;
+    padding: 0.85rem 1rem;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.promo-input:focus {
+    outline: none;
+    border-color: #fdcb6e;
+    box-shadow: 0 0 0 4px rgba(253, 203, 110, 0.2);
+}
+
+.promo-btn {
+    padding: 0.85rem 1.5rem;
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.promo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(253, 203, 110, 0.4);
+}
+
+.promo-feedback {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: none;
+}
+
+.promo-feedback.success {
+    background: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+    display: block;
+}
+
+.promo-feedback.error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+    display: block;
+}
+
+/* Price Summary */
+.price-summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.price-row:last-child {
+    border-bottom: none;
+}
+
+.price-label {
+    color: #636e72;
+    font-weight: 500;
+}
+
+.price-value {
+    font-weight: 600;
+    color: #2d3436;
+}
+
+.price-original {
+    text-decoration: line-through;
+    color: #b2bec3;
+    font-size: 0.95rem;
+}
+
+.price-discount {
+    color: #00b894;
+    font-weight: 700;
+}
+
+.price-total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #667eea;
+}
+
+.price-total .price-label {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3436;
+}
+
+.price-total .price-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* Submit Button */
+.btn-submit {
+    position: relative;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 1.2rem 2.5rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 
+        0 10px 30px rgba(102, 126, 234, 0.4),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 15px 40px rgba(102, 126, 234, 0.6),
+        inset 0 -4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit:active {
+    transform: translateY(-1px);
+}
+
+.btn-icon {
+    font-size: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.btn-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 200%; }
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    animation: pulse-loading 1.5s infinite;
+}
+
+@keyframes pulse-loading {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+}
+
+/* Cancel Link */
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 1rem;
+    color: #636e72;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    color: #2d3436;
+    transform: translateX(-5px);
+}
+
+/* Info Box */
+.info-box {
+    background: #e8f5e9;
+    border-left: 4px solid #00b894;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+.info-box h4 {
+    margin: 0 0 0.5rem 0;
+    color: #00b894;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-box p {
+    margin: 0;
+    color: #636e72;
+    font-size: 0.9rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .checkout-form {
+        padding: 1.5rem;
+    }
+    
+    .promo-input-group {
+        flex-direction: column;
+    }
+    
+    .btn-cancel {
+        display: block;
+        margin: 1rem 0 0 0;
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mx-auto p-6 max-w-2xl bg-white shadow-md rounded-lg mt-8">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800">Create New Order</h1>
-
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        {% for field in form %}
-            <div>
-                <label class="block text-gray-700 font-semibold mb-1">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                    <p class="text-sm text-gray-500">{{ field.help_text }}</p>
-                {% endif %}
-                {% for error in field.errors %}
-                    <p class="text-red-600 text-sm">{{ error }}</p>
+<div class="checkout-container">
+    <div class="checkout-card">
+        <!-- Header -->
+        <div class="checkout-header">
+            <h1>
+                <span class="checkout-header-icon">🛍️</span>
+                Buyurtmani tasdiqlash
+            </h1>
+        </div>
+        
+        <!-- Form -->
+        <div class="checkout-form">
+            <form method="post" id="order-form">
+                {% csrf_token %}
+                
+                <!-- Form Fields -->
+                {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label">
+                        {% if field.name == 'first_name' %}
+                            <i class="fas fa-user"></i>
+                        {% elif field.name == 'last_name' %}
+                            <i class="fas fa-user"></i>
+                        {% elif field.name == 'phone' %}
+                            <i class="fas fa-phone"></i>
+                        {% elif field.name == 'email' %}
+                            <i class="fas fa-envelope"></i>
+                        {% elif field.name == 'address' %}
+                            <i class="fas fa-map-marker-alt"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                        {% endif %}
+                        {{ field.label }}
+                    </label>
+                    
+                    {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea name="{{ field.name }}" class="form-input" rows="3" placeholder="{{ field.field.widget.attrs.placeholder }}">{{ field.value|default:'' }}</textarea>
+                    {% else %}
+                        <input type="{{ field.field.widget.input_type }}" 
+                               name="{{ field.name }}" 
+                               class="form-input" 
+                               value="{{ field.value|default:'' }}"
+                               placeholder="{{ field.field.widget.attrs.placeholder }}">
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                        <p class="text-sm" style="color: #636e72; margin-top: 0.5rem;">{{ field.help_text }}</p>
+                    {% endif %}
+                    
+                    {% for error in field.errors %}
+                        <div class="form-error">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
                 {% endfor %}
-            </div>
-        {% endfor %}
-
-        <h3>{{ total }}</h3>
-
-        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-            Place Order
-        </button>
-        <a href="{% url 'users:cart' %}" class="ml-4 text-blue-600 hover:underline">Cancel</a>
-    </form>
+                
+                <!-- Promocode Section -->
+                <div class="promo-section">
+                    <div class="promo-label">
+                        <i class="fas fa-tags" style="color: #fdcb6e;"></i>
+                        Promokod
+                        <span class="promo-tag">AKSIYA</span>
+                    </div>
+                    
+                    <div class="promo-input-group">
+                        <input type="text" 
+                               id="promocode" 
+                               name="promocode" 
+                               class="promo-input" 
+                               placeholder="PROMO2025">
+                        <button type="button" class="promo-btn" onclick="applyPromo()">
+                            <i class="fas fa-check-circle"></i>
+                            Qo'llash
+                        </button>
+                    </div>
+                    
+                    <div id="promo-feedback" class="promo-feedback"></div>
+                </div>
+                
+                <!-- Price Summary -->
+                <div class="price-summary">
+                    <div class="price-row">
+                        <span class="price-label">Mahsulotlar:</span>
+                        <span class="price-value" id="original-total">{{ total|floatformat:0 }} so'm</span>
+                    </div>
+                    
+                    <div class="price-row" id="discount-row" style="display: none;">
+                        <span class="price-label">Chegirma:</span>
+                        <span class="price-discount" id="discount-amount">0 so'm</span>
+                    </div>
+                    
+                    <div class="price-row price-total">
+                        <span class="price-label">Jami to'lov:</span>
+                        <span class="price-value" id="final-price">{{ total|floatformat:0 }} so'm</span>
+                    </div>
+                </div>
+                
+                <!-- Info Box -->
+                <div class="info-box">
+                    <h4>
+                        <i class="fas fa-truck"></i>
+                        Yetkazib berish haqida
+                    </h4>
+                    <p>Buyurtmangiz 2-3 ish kuni ichida yetkazib beriladi. Bepul yetkazib berish!</p>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    <span class="btn-icon">💳</span>
+                    <span>Buyurtmani tasdiqlash</span>
+                    <span class="btn-shimmer"></span>
+                </button>
+                
+                <a href="{% url 'users:cart' %}" class="btn-cancel">
+                    <i class="fas fa-arrow-left"></i>
+                    Bekor qilish
+                </a>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+// Form submit animation
+document.getElementById('order-form').addEventListener('submit', function() {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...';
+});
+
+// Promocode function
+function applyPromo() {
+    const promoInput = document.getElementById('promocode');
+    const promoCode = promoInput.value.trim().toUpperCase();
+    const feedback = document.getElementById('promo-feedback');
+    
+    if (!promoCode) {
+        feedback.className = 'promo-feedback error';
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Promokodni kiriting!';
+        return;
+    }
+    
+    // Example promo codes
+    const validPromos = {
+        'PROMO2025': 10,  // 10% discount
+        'NEWUSER': 15,    // 15% discount
+        'SALE50': 50      // 50% discount
+    };
+    
+    if (validPromos[promoCode]) {
+        const discount = validPromos[promoCode];
+        const originalTotal = {{ total }};
+        const discountAmount = originalTotal * (discount / 100);
+        const finalPrice = originalTotal - discountAmount;
+        
+        // Show discount
+        document.getElementById('discount-row').style.display = 'flex';
+        document.getElementById('discount-amount').textContent = `${discountAmount.toLocaleString()} so'm (${discount}%)`;
+        document.getElementById('final-price').textContent = `${finalPrice.toLocaleString()} so'm`;
+        
+        // Success feedback
+        feedback.className = 'promo-feedback success';
+        feedback.innerHTML = `<i class="fas fa-check-circle"></i> Promokod qo'llandi! ${discount}% chegirma`;
+        
+        // Disable input
+        promoInput.disabled = true;
+    } else {
+        feedback.className = 'promo-feedback error';
+        feedback.innerHTML = '<i class="fas fa-times-circle"></i> Noto\'g\'ri promokod!';
+    }
+}
+
+// Enter key for promo
+document.getElementById('promocode').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        applyPromo();
+    }
+});
+</script>
 {% endblock %}
