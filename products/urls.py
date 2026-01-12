@@ -1,6 +1,4 @@
 from django.urls import path
-
-from users.urls import urlpatterns
 from .views import new_product,product_detail,product_update,product_delete,new_comment,delete_comment
 app_name='products'
 

@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us - E-Bazar{% endblock %}
+
+{% block content %}
+<!--== About Us Section ==-->
+<section class="about-us py-5" style="background: #f8f9fa;">
+  <div class="container">
+
+    <!-- Section Title -->
+    <div class="text-center mb-5">
+      <h2 class="fw-bold display-5 text-primary">About Us</h2>
+      <p class="lead text-muted">
+        Meet the passionate team behind <strong>E-Bazar</strong>,
+        committed to bringing you the best online marketplace experience.
+      </p>
+    </div>
+
+    <!-- Team Members -->
+    <div class="row g-4 justify-content-center mb-5">
+
+      <!-- Team Member 1 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm text-center h-100 team-card position-relative">
+
+          <div class="position-relative">
+            <img src="{% static 'images/team1.jpg' %}" class="rounded-circle mx-auto mt-4 team-img" alt="Ali">
+            <div class="team-social d-flex justify-content-center align-items-center gap-2">
+              <a href="https://facebook.com/ali" target="_blank"><i class="bi bi-facebook"></i></a>
+              <a href="https://instagram.com/ali" target="_blank"><i class="bi bi-instagram"></i></a>
+              <a href="https://t.me/ali" target="_blank"><i class="bi bi-telegram"></i></a>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="fw-bold"><a href="{% url 'main:team_detail' 1 %}" class="text-decoration-none text-dark">Ali</a></h5>
+            <p class="text-primary fw-semibold mb-2">Co-Founder & CEO</p>
+            <p class="text-muted">Responsible for strategy, growth, and partnerships.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 2 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm text-center h-100 team-card position-relative">
+
+          <div class="position-relative">
+            <img src="{% static 'images/team2.jpg' %}" class="rounded-circle mx-auto mt-4 team-img" alt="Jasmin">
+            <div class="team-social d-flex justify-content-center align-items-center gap-2">
+              <a href="https://facebook.com/jasmin" target="_blank"><i class="bi bi-facebook"></i></a>
+              <a href="https://instagram.com/jasmin" target="_blank"><i class="bi bi-instagram"></i></a>
+              <a href="https://t.me/ali" target="_blank"><i class="bi bi-telegram"></i></a>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="fw-bold"><a href="{% url 'main:team_detail' 2 %}" class="text-decoration-none text-dark">Jasmin</a></h5>
+            <p class="text-primary fw-semibold mb-2">Co-Founder & CTO</p>
+            <p class="text-muted">Leads the technical and security infrastructure.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 3 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm text-center h-100 team-card position-relative">
+
+          <div class="position-relative">
+            <img src="{% static 'images/team3.jpg' %}" class="rounded-circle mx-auto mt-4 team-img" alt="Bobur">
+            <div class="team-social d-flex justify-content-center align-items-center gap-2">
+              <a href="https://facebook.com/bobur" target="_blank"><i class="bi bi-facebook"></i></a>
+              <a href="https://instagram.com/bobur" target="_blank"><i class="bi bi-instagram"></i></a>
+              <a href="https://t.me/ali" target="_blank"><i class="bi bi-telegram"></i></a>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="fw-bold"><a href="{% url 'main:team_detail' 3 %}" class="text-decoration-none text-dark">Bobur</a></h5>
+            <p class="text-primary fw-semibold mb-2">Marketing & Operations</p>
+            <p class="text-muted">Manages marketing and customer relations.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Team Member 4 -->
+      <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm text-center h-100 team-card position-relative">
+
+          <div class="position-relative">
+            <img src="{% static 'images/team4.jpg' %}" class="rounded-circle mx-auto mt-4 team-img" alt="Laylo">
+            <div class="team-social d-flex justify-content-center align-items-center gap-2">
+              <a href="https://facebook.com/laylo" target="_blank"><i class="bi bi-facebook"></i></a>
+              <a href="https://instagram.com/laylo" target="_blank"><i class="bi bi-instagram"></i></a>
+              <a href="https://t.me/ali" target="_blank"><i class="bi bi-telegram"></i></a>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h5 class="fw-bold"><a href="{% url 'main:team_detail' 4 %}" class="text-decoration-none text-dark">Laylo</a></h5>
+            <p class="text-primary fw-semibold mb-2">Design & UX</p>
+            <p class="text-muted">Ensures a beautiful and user-friendly design.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Mission & Why Choose Us -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8">
+        <div class="mission-card text-center p-5 shadow-sm rounded-4">
+          <h3 class="fw-bold text-primary mb-3">Our Mission</h3>
+          <p class="lead text-secondary">
+            To create a secure, seamless, and enjoyable marketplace that empowers
+            communities and small businesses.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h3 class="fw-bold text-primary mb-4">Why Choose Us?</h3>
+        <div class="row g-3">
+          <div class="col-md-6"><div class="why-card">✔ Wide product selection</div></div>
+          <div class="col-md-6"><div class="why-card">✔ Secure payments</div></div>
+          <div class="col-md-6"><div class="why-card">✔ User-friendly interface</div></div>
+          <div class="col-md-6"><div class="why-card">✔ Fast support</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!--== Custom CSS ==-->
+<style>
+.team-card { border-radius: 20px; transition: 0.4s; }
+.team-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,.15); }
+.team-img { width: 150px; height: 150px; object-fit: cover; border: 5px solid #0d6efd; }
+.team-social { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0; transition: .3s; }
+.team-card:hover .team-social { opacity: 1; }
+.team-social a { width: 40px; height: 40px; background: #0d6efd; color: #fff; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; }
+.mission-card { background: #e9f2ff; }
+.why-card { background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+</style>
+{% endblock %}

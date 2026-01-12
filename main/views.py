@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from django.views import View
+from django.views.generic import TemplateView
+
+from main.models import TeamMember
 from products.models import Product,Category
 from django.shortcuts import get_object_or_404
 from django import http
@@ -32,3 +35,18 @@ class CategoryView(View):
         return render (request,"category.html",{'products':products,'category':category})
 
 
+class AboutView(TemplateView):
+    template_name = "pages/about.html"
+
+
+class ContactView(TemplateView):
+    template_name = "pages/contact.html"
+
+
+class PublicOfferView(TemplateView):
+    template_name = "main/public_offer.html"
+
+
+def team_detail(request, pk):
+    member = get_object_or_404(TeamMember, pk=pk)
+    return render(request, 'main/team_detail.html', {'member': member})

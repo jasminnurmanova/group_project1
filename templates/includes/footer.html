@@ -1,0 +1,71 @@
+{% load static %}
+
+<!--== Start Footer Area Wrapper ==-->
+<footer class="footer-area bg-dark text-white pt-5">
+  <div class="footer-main">
+    <div class="container">
+      <div class="row">
+        <!-- About Information -->
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+          <div class="widget-item">
+            <h5 class="widget-title">About Information</h5>
+            <p class="small">
+                Our mission is to make online shopping simple, safe, and enjoyable for everyone. Join thousands of users who trust E-Bazar daily.
+            </p>
+          </div>
+        </div>
+
+        <!-- Information Menu -->
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+          <div class="widget-item">
+            <h5 class="widget-title">Information</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'main:about' %}">About Us</a></li>
+                <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'main:contact' %}">Contact Us</a></li>
+                <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'main:public_offer' %}">Public Offer</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+          <div class="widget-item">
+            <h5 class="widget-title">Quick Links</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'login' %}">Login</a></li>
+              <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'users:wishlists' %}">Wishlist</a></li>
+              <li class="nav-item mb-2"><a class="nav-link text-white p-0" href="{% url 'users:cart' %}">Cart</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+          <div class="widget-item">
+            <h5 class="widget-title">Contact Us</h5>
+            <p class="small mb-2">Tashkent, Uzbekistan</p>
+            <ul class="list-unstyled small">
+              <li class="mb-1"><a class="text-white text-decoration-none" href="tel:+998900000000">+998 90 000 00 00</a></li>
+              <li><a class="text-white text-decoration-none" href="mailto:info@ebazar.uz">info@ebazar.uz</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom py-3 mt-4 border-top border-secondary">
+    <div class="container text-center small">
+      © 2026 <strong>E-Bazar</strong>. Made with ❤️ by Jasmin Nurmanova
+    </div>
+  </div>
+</footer>
+<!--== End Footer Area Wrapper ==-->
+
+<!-- Optional: Scroll to top button -->
+<div class="scroll-to-top position-fixed bottom-0 end-0 m-3">
+  <button class="btn btn-primary rounded-circle">
+    <i class="bi bi-arrow-up"></i>
+  </button>
+</div>
