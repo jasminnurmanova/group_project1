@@ -283,7 +283,7 @@ class OrdersView(LoginRequiredMixin, View):
 class DepositRequestView(LoginRequiredMixin, View):
     def get(self, request):
         form = DepositRequestForm()
-        user_requests = DepositRequest.objects.filter(user=request.user).order_by('-id')
+        user_requests = DepositRequest.objects.filter(user=request.user, status='pending').order_by('-id')
         context = {
             'form': form,
             'user_requests': user_requests,
